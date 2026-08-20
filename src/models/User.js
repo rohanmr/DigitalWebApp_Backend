@@ -1,11 +1,8 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
-    // ==========================================
-    // Basic Information
-    // ==========================================
-
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -29,19 +26,12 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // ==========================================
-    // Authentication
-    // ==========================================
-
     password: {
       type: String,
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"],
+      select: false,
     },
-
-    // ==========================================
-    // Role
-    // ==========================================
 
     role: {
       type: String,
@@ -50,18 +40,10 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-    // ==========================================
-    // Account Status
-    // ==========================================
-
     isActive: {
       type: Boolean,
       default: true,
     },
-
-    // ==========================================
-    // Worker Created By
-    // ==========================================
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -73,6 +55,28 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+// ==========================================
+// Hash Password Before Saving
+// ==========================================
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
+
+  const salt = await bcrypt.genSalt(10);
+
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+// ==========================================
+// Compare Password
+// ==========================================
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 

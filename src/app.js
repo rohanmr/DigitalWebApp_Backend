@@ -2,9 +2,11 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
 
 const connectDatabase = require("./config/db");
+const User = require("./models/User");
+const authRoutes = require("./routes/authRoutes");
+
 
 const app = express();
 
@@ -27,7 +29,7 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cookieParser());
+app.use("/api/auth", authRoutes);
 
 // ==========================================
 // Routes
@@ -46,6 +48,31 @@ app.get("/api/health", (req, res) => {
     message: "Ganpati Pavti API is running",
     environment: process.env.NODE_ENV || "development",
   });
+});
+
+app.get("/api/test-user-model", async (req, res) => {
+  try {
+    const user = await User.create({
+      name: "Test Admin",
+      email: "testadmin@example.com",
+      mobile: "9999999999",
+      password: "temporary-password",
+      role: "admin",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "User model is working",
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 });
 
 // ==========================================
