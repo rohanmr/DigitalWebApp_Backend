@@ -7,6 +7,9 @@ const connectDatabase = require("./config/db");
 const User = require("./models/User");
 const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const donationRoutes = require("./routes/donationRoutes");
+const volunteerRoutes = require("./routes/volunteerRoutes");
+const receiptRoutes = require("./routes/receiptRoutes");
 
 const app = express();
 
@@ -31,6 +34,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/donations", donationRoutes);
+app.use("/api/volunteers", volunteerRoutes);
+app.use("/api/receipts", receiptRoutes);
+
 
 // ==========================================
 // Routes
