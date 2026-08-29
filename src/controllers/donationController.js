@@ -279,7 +279,7 @@ const updateDonation = async (req, res) => {
         // Volunteer cannot change sensitive paid receipt data
         if (
             req.user.role === "volunteer" &&
-            donation.pavtiGenerated
+            donation.receiptGenerated
         ) {
             const protectedFields = [
                 "promisedAmount",
@@ -300,7 +300,7 @@ const updateDonation = async (req, res) => {
                 return res.status(403).json({
                     success: false,
                     message:
-                        "Paid donation details cannot be changed after Pavti generation",
+                        "Paid donation details cannot be changed after receipt generation",
                 });
             }
         }
@@ -505,11 +505,11 @@ const deleteDonation = async (req, res) => {
             });
         }
 
-        if (donation.pavtiGenerated) {
+        if (donation.receiptGenerated) {
             return res.status(400).json({
                 success: false,
                 message:
-                    "Donation with generated Pavti cannot be deleted",
+                    "Donation with generated receipt cannot be deleted",
             });
         }
 
