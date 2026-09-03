@@ -29,18 +29,26 @@ const PORT = process.env.PORT || 5000;
 // );
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://192.168.1.11:5173",
+  "http://10.203.34.84:5173",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like curl/postman)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+      // Allow Postman, curl, etc.
+      if (!origin) {
+        return callback(null, true);
       }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.log("Blocked CORS origin:", origin);
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     },
     credentials: true,
   })
@@ -106,11 +114,22 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
   await connectDatabase();
 
-  app.listen(PORT, () => {
+  // app.listen(PORT, () => {
+  //   console.log("======================================");
+  //   console.log("   Ganpati vargani Management System");
+  //   console.log("======================================");
+  //   console.log(`Server: http://localhost:${PORT}`);
+  //   console.log(
+  //     `Environment: ${process.env.NODE_ENV || "development"}`
+  //   );
+  //   console.log("======================================");
+  // });
+  app.listen(PORT, "0.0.0.0", () => {
     console.log("======================================");
-    console.log("   Ganpati vargani Management System");
+    console.log("   Ganpati Vargani Management System");
     console.log("======================================");
     console.log(`Server: http://localhost:${PORT}`);
+    console.log(`Network: http://192.168.1.11:${PORT}`);
     console.log(
       `Environment: ${process.env.NODE_ENV || "development"}`
     );
