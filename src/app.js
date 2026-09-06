@@ -68,14 +68,14 @@ app.use("/api/receipts", receiptRoutes);
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Welcome to Ganpati Pavti Management System API",
+    message: "Welcome to Ganpati Donation Management System API",
   });
 });
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Ganpati Pavti API is running",
+    message: "Pavnara Ganpati API is running",
     environment: process.env.NODE_ENV || "development",
   });
 });
