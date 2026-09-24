@@ -477,6 +477,57 @@ const markDonationAsPaid = async (req, res) => {
 // Delete Donation
 // ==========================================
 
+// const deleteDonation = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+
+//         if (!mongoose.Types.ObjectId.isValid(id)) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Invalid donation ID",
+//             });
+//         }
+
+//         const donation = await Donation.findById(id);
+
+//         if (!donation) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "Donation not found",
+//             });
+//         }
+
+//         // Only admin can delete
+//         if (req.user.role !== "admin") {
+//             return res.status(403).json({
+//                 success: false,
+//                 message: "Only admin can delete donations",
+//             });
+//         }
+
+//         if (donation.receiptGenerated) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message:
+//                     "Donation with generated receipt cannot be deleted",
+//             });
+//         }
+
+//         await Donation.findByIdAndDelete(id);
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Donation deleted successfully",
+//         });
+//     } catch (error) {
+//         console.error("Delete donation error:", error);
+
+//         return res.status(500).json({
+//             success: false,
+//             message: "Failed to delete donation",
+//         });
+//     }
+// };
 const deleteDonation = async (req, res) => {
     try {
         const { id } = req.params;
@@ -505,13 +556,8 @@ const deleteDonation = async (req, res) => {
             });
         }
 
-        if (donation.receiptGenerated) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    "Donation with generated receipt cannot be deleted",
-            });
-        }
+        // Admin can delete even receipted donations — no receiptGenerated block anymore.
+        // (Volunteers were already blocked entirely by the role check above.)
 
         await Donation.findByIdAndDelete(id);
 

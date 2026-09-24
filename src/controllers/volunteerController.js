@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const Donation = require("../models/Donation");
 
 // ==========================================
 // Create Volunteer
@@ -308,10 +309,58 @@ const updateVolunteerStatus = async (req, res) => {
   }
 };
 
+// ==========================================
+// Delete Volunteer
+// ==========================================
+
+const deleteVolunteer = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const volunteer = await User.findOne({ _id: id, role: "volunteer" });
+
+    if (!volunteer) {
+      return res.status(404).json({
+        success: false,
+        message: "Volunteer not found",
+      });
+    }
+
+    // Prevent deleting a volunteer who has donation history — their name
+    // would still show up on old donations/receipts as "collectedBy", so
+    // hard-deleting the user record would orphan that reference.
+    // Deactivating (existing status toggle) is the safe alternative.
+    const donationCount = await Donation.countDocuments({ collectedBy: id });
+
+    if (donationCount > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `This volunteer has ${donationCount} donation(s) on record and cannot be deleted. Deactivate them instead to preserve donation history.`,
+      });
+    }
+
+    await User.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Volunteer deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete volunteer error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete volunteer",
+    });
+  }
+};
+
+
 module.exports = {
   createVolunteer,
   getVolunteers,
   getVolunteerById,
   updateVolunteer,
   updateVolunteerStatus,
+  deleteVolunteer
 };

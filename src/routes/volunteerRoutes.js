@@ -6,6 +6,7 @@ const {
     getVolunteerById,
     updateVolunteer,
     updateVolunteerStatus,
+    deleteVolunteer
 } = require("../controllers/volunteerController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -31,5 +32,7 @@ router.get("/:id", getVolunteerById);
 router.put("/:id", updateVolunteer);
 
 router.patch("/:id/status", updateVolunteerStatus);
+
+router.delete("/:id", deleteVolunteer);
 
 module.exports = router;

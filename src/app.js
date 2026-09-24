@@ -28,6 +28,8 @@ const PORT = process.env.PORT || 5000;
 //   })
 // );
 const allowedOrigins = [
+  "http://localhost:5000",
+  "http://172.20.10.2:5173",
   "http://192.168.1.11:5173",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
